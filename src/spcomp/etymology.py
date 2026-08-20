@@ -310,7 +310,13 @@ class WiktionaryClient:
             extension = parse_etymology(text, source_lang)
             if not extension:
                 break
-            result.chain.extend(extension)
+            # An ancestor's page often restates steps already on the chain
+            # (`cao` yielded roa-opt > la > roa-opt > la > ine-pro > la).
+            # Duplicates do not change the proximate donor but make the
+            # recorded chain misleading, so drop repeats while keeping order.
+            for step in extension:
+                if step not in result.chain:
+                    result.chain.append(step)
             result.found = True
 
         return result

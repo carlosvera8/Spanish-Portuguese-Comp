@@ -36,7 +36,6 @@ _SHARED_RULES: list[tuple[str, str]] = [
     (r"qu(?=[ei])", "k"),
     (r"gu(?=[ei])", "g"),
     (r"c(?=[ei])", "s"),      # ceviche/cebola -> s
-    (r"ch(?=.)", "ch"),        # placeholder, real handling is per-language
     (r"c", "k"),
     (r"ç", "s"),
     (r"z", "s"),
@@ -76,8 +75,14 @@ _ES_RULES: list[tuple[str, str]] = [
     # Latin -NN-/-NI- -> Spanish <ñ>, Portuguese <nh>.
     (r"ñ", "N"),
     # Diphthongisation of Latin short E and O -- Spanish only.
+    #
+    # The <u> of the digraphs <qu>/<gu> is silent, not part of a diphthong, so
+    # these rules must not fire there. Without the guard, "queso" became "qoso"
+    # while Portuguese "queijo" became "keiJo", and an identical inherited word
+    # was scored 0.20 and counted as a divergence. Shared rules reduce qu/gu
+    # afterwards, which is why the guard is needed here rather than reordering.
     (r"ie", "e"),
-    (r"ue", "o"),
+    (r"(?<![qg])ue", "o"),
     # Suffix correspondences
     (r"sion$", "Con"),
     (r"kion$", "Con"),

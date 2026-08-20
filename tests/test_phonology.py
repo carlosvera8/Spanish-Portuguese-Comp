@@ -65,3 +65,30 @@ def test_reflexive_lemma_fallback():
     assert "arrodillar" in client._lemma_candidates("arrodillarse", "es")
     assert "zambullir" in client._lemma_candidates("zambullirse", "es")
     assert client._lemma_candidates("casa", "es") == ["casa"]
+
+
+# Regression: the <u> in <qu>/<gu> is silent, not a diphthong. Before the
+# guard, "queso" -> "qoso" while "queijo" -> "keiJo", scoring an identical
+# inherited word at 0.20 and counting it as a divergence.
+QU_GU_PAIRS = [
+    ("que", "que"), ("queso", "queijo"), ("querer", "querer"),
+    ("quemar", "queimar"), ("pequeño", "pequeno"), ("guerra", "guerra"),
+    ("quien", "quem"), ("quince", "quinze"),
+]
+
+
+@pytest.mark.parametrize("spanish,portuguese", QU_GU_PAIRS)
+def test_qu_gu_digraph_not_treated_as_diphthong(spanish, portuguese):
+    score = similarity(normalise(spanish, "es"), normalise(portuguese, "pt"))
+    assert score >= 0.43, (
+        f"{spanish}/{portuguese} -> {normalise(spanish, 'es')}/"
+        f"{normalise(portuguese, 'pt')} scored {score:.2f}"
+    )
+
+
+def test_genuine_diphthongs_still_collapse():
+    """The guard must not disable the rule where it legitimately applies."""
+    for spanish, portuguese in [("fuego", "fogo"), ("bueno", "bom"),
+                                ("puerta", "porta"), ("cuenta", "conta"),
+                                ("juego", "jogo"), ("muerte", "morte")]:
+        assert similarity(normalise(spanish, "es"), normalise(portuguese, "pt")) >= 0.7

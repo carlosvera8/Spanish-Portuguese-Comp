@@ -4,15 +4,15 @@ gold set: 76 known cognates / 24 known non-cognates
 Threshold-independent separability:
   metric            AUC   mean(cog)   mean(non)     gap
   raw            0.9855       0.657       0.191   0.466
-  normalised     0.9973       0.870       0.200   0.669
-  aggressive     0.9940       0.872       0.192   0.680
-  best           0.9984       0.887       0.205   0.682
+  normalised     0.9973       0.874       0.200   0.674
+  aggressive     0.9945       0.876       0.192   0.684
+  best           0.9984       0.891       0.205   0.687
 
 Best-F1 operating point:
   metric         thr      F1    prec  recall
   raw           0.38   0.980   0.987   0.974
   normalised    0.43   0.987   0.974   1.000
-  aggressive    0.43   0.974   0.974   0.974
+  aggressive    0.51   0.980   1.000   0.961
   best          0.43   0.987   0.974   1.000
 
 Cost of skipping sound normalisation
@@ -20,7 +20,7 @@ Cost of skipping sound normalisation
   threshold 0.40:  raw misses  2/76 ( 2.6%)   normalised misses  0/76 ( 0.0%)
   threshold 0.50:  raw misses 11/76 (14.5%)   normalised misses  0/76 ( 0.0%)
   threshold 0.60:  raw misses 19/76 (25.0%)   normalised misses  5/76 ( 6.6%)
-  threshold 0.70:  raw misses 46/76 (60.5%)   normalised misses 12/76 (15.8%)
+  threshold 0.70:  raw misses 46/76 (60.5%)   normalised misses 11/76 (14.5%)
 
 Largest rescues (raw -> normalised):
   hijo        filho       0.40 -> 1.00  (+0.60)

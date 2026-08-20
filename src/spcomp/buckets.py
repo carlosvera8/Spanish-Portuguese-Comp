@@ -93,7 +93,9 @@ def bucket(spanish_category: str, portuguese_category: str) -> str:
     if spanish_native and portuguese_native:
         return "A_DIFFERENT_LATIN_ETYMON"
     if not spanish_native and not portuguese_native:
+        # Both borrowed. Same donor family means parallel borrowing of the same
+        # cultural item; different families mean genuinely divergent contact.
         if spanish_category == portuguese_category:
-            return "A_DIFFERENT_LATIN_ETYMON" if spanish_native else "B_SAME_DONOR_FAMILY"
+            return "B_SAME_DONOR_FAMILY"
         return "B_DIVERGENT_LOAN_ROUTE"
     return "C_ONE_SIDED_BORROWING"

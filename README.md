@@ -10,18 +10,18 @@ ground truth rather than inference from clusters.
 | | |
 |---|---|
 | Concept pairs analysed | **1,214** (IDS core vocabulary) |
-| Cognate | **886 (73.0%)** |
-| Non-cognate | **328 (27.0%)** |
+| Cognate | **890 (73.3%)** |
+| Non-cognate | **324 (26.7%)** |
 | Etymology resolved both sides | **86.1%** |
 
 ### 1. Divergence is mostly *internal*, not contact-driven
 
 | Mechanism | Pairs | Share |
 |---|---|---|
-| **A — different Latin etymon** | 167 | **50.9%** |
-| C — one-sided borrowing | 65 | 19.8% |
+| **A — different Latin etymon** | 166 | **51.2%** |
+| C — one-sided borrowing | 63 | 19.4% |
 | B — divergent loan route | 15 | 4.6% |
-| Unresolved | 81 | 24.7% |
+| Unresolved | 80 | 24.7% |
 
 Over half of all divergence is two languages inheriting from Latin and simply
 picking **different Latin words** — `ventana` (< VENTUM, "wind") vs `janela`
@@ -35,19 +35,20 @@ field is significant — and in the opposite direction**:
 
 | Field | n | non-cognate rate | lift | p | p-adj |
 |---|---|---|---|---|---|
-| **Quantity** | 34 | **2.9%** | 0.11 | 0.0006 | **0.0123** ✓ |
-| The house | 39 | 38.5% | 1.42 | 0.14 | 0.58 |
-| Basic actions | 69 | 37.7% | 1.39 | 0.050 | 0.36 |
-| Spatial relations | 67 | 37.3% | 1.38 | 0.065 | 0.36 |
-| Cognition | 48 | 14.6% | 0.54 | 0.048 | 0.36 |
+| **Quantity** | 34 | **2.9%** | 0.11 | 0.0005 | **0.0121** ✓ |
+| The house | 39 | 38.5% | 1.44 | 0.099 | 0.44 |
+| Basic actions | 69 | 37.7% | 1.41 | 0.049 | 0.27 |
+| Spatial relations | 67 | 37.3% | 1.40 | 0.047 | 0.27 |
+| Cognition | 48 | 10.4% | 0.39 | 0.0073 | 0.081 |
 
 Numerals are almost perfectly conserved (1 divergent pair in 34). Nothing is
 significantly *more* divergent than baseline.
 
 **This is why the FDR correction mattered.** Raw p-values would have declared
-"Basic actions" (p = 0.0499) and "Cognition" (p = 0.0475) significant. With 22
-simultaneous tests, those are exactly the false positives the correction is
-designed to kill.
+three fields significant — Cognition (p = 0.0073), Spatial relations
+(p = 0.047) and Basic actions (p = 0.049). With 22 simultaneous tests those
+are exactly the false positives the correction is designed to kill, and none
+survives it.
 
 ### 3. The Arabic layer is largely *shared*, not divergent
 
@@ -97,7 +98,7 @@ fields, which is a better label set than anything inferable from a word list.
 **Raw edit distance is not enough.** Regular sound change makes true cognates
 look unrelated. Measured on the calibration set, sound normalisation raises AUC
 from **0.9855 → 0.9973**, and at a 0.6 threshold cuts misclassified cognates
-from **25% → 7%**:
+from **25.0% → 6.6%** (at 0.7, from **60.5% → 14.5%**):
 
 | Spanish | Portuguese | raw | normalised |
 |---|---|---|---|
@@ -120,7 +121,7 @@ python scripts/run_all.py
 | `03_fetch_etymology.py` | Resolves donor language per word (cached) |
 | `04_analyze.py` | Fisher + BH-FDR enrichment, mechanism attribution |
 
-`pytest tests/ -q` → 44 tests. See [docs/METHODOLOGY.md](docs/METHODOLOGY.md).
+`pytest tests/ -q` → 53 tests. See [docs/METHODOLOGY.md](docs/METHODOLOGY.md).
 
 ## Limitations
 
@@ -133,6 +134,10 @@ python scripts/run_all.py
 - **IDS gives one primary translation per concept**, so synonyms that would
   reveal a shared cognate are missed; divergence is somewhat over-counted.
 - **96 multiword pairs excluded** from scoring, flagged in `pairs.csv`.
+- **The `qu`/`gu` normalisation bug** (fixed, with regression tests) had been
+  counting identical words like `queso`/`queijo` as divergent. It moved the
+  cognate rate 73.0% -> 73.3%. Similar rule-interaction bugs may remain; the
+  gold-set calibration is the guard against them.
 - Core vocabulary only. A frequency-weighted or full-dictionary tier would
   likely show *more* contact-driven divergence, since borrowings concentrate in
   culturally specific, lower-frequency vocabulary.
